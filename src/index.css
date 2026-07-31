@@ -72,3 +72,11 @@ a {
 input, select, textarea, button {
   font-family: inherit;
 }
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

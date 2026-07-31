@@ -12,11 +12,11 @@ const navItems = [
   { to: '/contact', icon: 'mail', label: 'Contact' },
 ]
 
-export default function Sidebar({ mobileOpen, onMobileClose, collapsed }) {
+export default function Sidebar({ collapsed }) {
   const content = (
     <div className="flex flex-col h-full">
       <div className={`p-4 border-b border-gray-100 ${collapsed ? 'flex justify-center' : ''}`}>
-        <NavLink to="/home" onClick={onMobileClose} className="flex items-center gap-3">
+        <NavLink to="/home" className="flex items-center gap-3">
           <img
             src="/logo.png"
             alt="UOL"
@@ -43,7 +43,6 @@ export default function Sidebar({ mobileOpen, onMobileClose, collapsed }) {
           <NavLink
             key={item.to}
             to={item.to}
-            onClick={onMobileClose}
             className={({ isActive }) =>
               `flex items-center gap-3 rounded-xl text-sm font-medium transition-all ${
                 collapsed ? 'justify-center px-0 py-2.5' : 'px-4 py-2.5'
@@ -68,26 +67,13 @@ export default function Sidebar({ mobileOpen, onMobileClose, collapsed }) {
   )
 
   return (
-    <>
-      {mobileOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/30" onClick={onMobileClose} />
-      )}
-      <aside
-        className={`
-          hidden lg:flex flex-col h-screen sticky top-0 bg-white border-r border-gray-200 shadow-sm shrink-0 transition-all duration-300
-          ${collapsed ? 'w-16' : 'w-64'}
-        `}
-      >
-        {content}
-      </aside>
-      <aside
-        className={`
-          lg:hidden fixed top-0 left-0 z-50 h-screen w-64 bg-white shadow-xl transition-transform duration-300
-          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
-        `}
-      >
-        {content}
-      </aside>
-    </>
+    <aside
+      className={`
+        hidden lg:flex flex-col h-screen sticky top-0 bg-white border-r border-gray-200 shadow-sm shrink-0 transition-all duration-300
+        ${collapsed ? 'w-16' : 'w-64'}
+      `}
+    >
+      {content}
+    </aside>
   )
 }

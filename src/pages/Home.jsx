@@ -8,9 +8,9 @@ const features = [
 ]
 
 const samples = [
-  { room: 'CS Lab 1', building: 'Engineering Block' },
-  { room: 'Room 302', building: 'Business School' },
-  { room: 'Pharmacy Lab 2', building: 'Science Complex' },
+  { room: 'MOOT Court Room', building: 'EE-1' },
+  { room: 'IT LAB CS 301', building: 'CS Building' },
+  { room: 'Mechanics Lab', building: 'EE-2' },
 ]
 
 const testimonials = [
@@ -22,7 +22,7 @@ const testimonials = [
 export default function Home() {
   return (
     <div>
-      <section className="relative h-[70vh] min-h-[400px] flex items-center overflow-hidden">
+      <section className="relative min-h-[480px] sm:min-h-[520px] h-[80vh] flex items-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -34,29 +34,29 @@ export default function Home() {
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-gold blur-3xl"></div>
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-gold blur-3xl"></div>
         </div>
-        <div className="relative max-w-7xl mx-auto px-6 w-full">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 w-full">
           <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-gold/15 text-gold text-sm font-medium rounded-full mb-5">
+            <span className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-gold/15 text-gold text-xs sm:text-sm font-medium rounded-full mb-4 sm:mb-5">
               <span className="w-2 h-2 rounded-full bg-gold"></span>
               Digital Campus Companion
             </span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-5">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4 sm:mb-5">
               Navigate Your Academic Journey at UOL
             </h1>
-            <p className="text-lg md:text-xl text-gray-200 max-w-xl mb-8 leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl text-gray-200 max-w-xl mb-6 sm:mb-8 leading-relaxed">
               A centralized portal to find rooms, calculate grades, review faculty, and share campus memories — built for the modern University of Lahore experience.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <a
                 href="#tools"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gold text-[#173D32] font-semibold rounded-2xl hover:bg-gold-dark transition-all shadow-lg shadow-gold/25"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gold text-[#173D32] font-semibold rounded-2xl hover:bg-gold-dark transition-all shadow-lg shadow-gold/25"
               >
                 Explore Features
-            <span className="material-symbols-outlined text-white">arrow_forward</span>
+                <span className="material-symbols-outlined text-[#173D32]">arrow_forward</span>
               </a>
               <Link
                 to="/memory-wall"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-[#173D32] font-semibold rounded-2xl border border-white/30 hover:bg-gray-50 transition-all shadow-lg"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-[#173D32] font-semibold rounded-2xl border border-white/30 hover:bg-gray-50 transition-all shadow-lg"
               >
                 Campus Map
                 <span className="material-symbols-outlined">map</span>
@@ -66,12 +66,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="tools" className="max-w-7xl mx-auto px-6 mt-16 mb-14 relative z-10">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-[#173D32] mb-2">Tools Designed for Success</h2>
-          <p className="text-gray-500">Everything you need to navigate UOL smoothly.</p>
+      <section id="tools" className="max-w-7xl mx-auto px-4 sm:px-6 mt-10 sm:mt-16 mb-10 sm:mb-14 relative z-10">
+        <div className="text-center mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-[#173D32] mb-2">Tools Designed for Success</h2>
+          <p className="text-sm sm:text-base text-gray-500">Everything you need to navigate UOL smoothly.</p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {features.map((f) => (
             <Link
               key={f.title}
@@ -91,8 +91,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-6 mb-14">
-        <div className="max-w-3xl mx-auto bg-white rounded-2xl p-7 shadow-sm border border-gray-100">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-10 sm:mb-14">
+        <div className="max-w-3xl mx-auto bg-white rounded-2xl p-5 sm:p-7 shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-5 bg-navy rounded-xl px-5 py-3">
             <span className="material-symbols-outlined text-white text-3xl">map</span>
             <div>
@@ -111,13 +111,13 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-14 bg-gray-50 border-y border-gray-100">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-[#173D32] mb-2">Student Experiences</h2>
-            <p className="text-gray-500">Hear from your fellow students.</p>
+      <section className="py-10 sm:py-14 bg-gray-50 border-y border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-8 sm:mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#173D32] mb-2">Student Experiences</h2>
+            <p className="text-sm sm:text-base text-gray-500">Hear from your fellow students.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {testimonials.map((t) => (
               <div key={t.name} className="bg-white rounded-2xl p-7 shadow-sm border border-gray-100 flex flex-col">
                 <div className="flex gap-0.5 mb-4">
@@ -141,8 +141,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-14">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+      <section className="py-10 sm:py-14">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <span className="material-symbols-outlined text-4xl text-navy mb-3">support_agent</span>
           <h2 className="text-2xl font-bold text-navy mb-2">Need Help?</h2>
           <p className="text-gray-500 mb-6">Facing any issues? Get in touch with the UOL Nexus team.</p>
