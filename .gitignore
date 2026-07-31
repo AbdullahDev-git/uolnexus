@@ -1,0 +1,49 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Data files
+*.xlsx
+*.xls
+*.csv
+
+# Python tooling scripts
+upload_photos.py
+analyze_image.py
+generate_complete_seed.py
+generate_seed.py
+generate_teachers_sql.py
+
+# Root-level SQL dump files
+seed_complete.sql
+seed_real_teachers.sql
+
+# Temp
+temp/
+*.tmp
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
