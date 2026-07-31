@@ -62,7 +62,7 @@ export default function Sidebar({ mobileOpen, onMobileClose, collapsed }) {
       </nav>
 
       <div className={`p-4 border-t border-gray-100 ${collapsed ? 'text-center' : ''}`}>
-        <p className="text-[10px] text-gray-400">{collapsed ? '©' : '© 2024 UOL Nexus'}</p>
+        <p className="text-[10px] text-gray-400">{collapsed ? '©' : '© 2026 UOL Nexus'}</p>
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { usePageTracking } from './lib/ga4'
 import Layout from './components/Layout'
 import Welcome from './pages/Welcome'
 import Home from './pages/Home'
@@ -13,9 +14,15 @@ import AdminMemories from './pages/AdminMemories'
 import AboutUs from './pages/AboutUs'
 import Contact from './pages/Contact'
 
+function PageTracker() {
+  usePageTracking()
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <PageTracker />
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route element={<Layout />}>
