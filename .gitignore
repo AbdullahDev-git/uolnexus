@@ -23,15 +23,15 @@ dist-ssr
 *.csv
 
 # Python tooling scripts
-upload_photos.py
-analyze_image.py
-generate_complete_seed.py
-generate_seed.py
-generate_teachers_sql.py
+*.py
 
-# Root-level SQL dump files
-seed_complete.sql
-seed_real_teachers.sql
+# SQL seed files
+*.sql
+!supabase/schema.sql
+
+# Generated/private assets
+public/logo_new.png
+email-template.html
 
 # Temp
 temp/

@@ -12,7 +12,7 @@ const particles = Array.from({ length: 50 }, (_, i) => ({
 export default function Welcome() {
   return (
     <div className="min-h-screen bg-cover bg-center bg-no-repeat relative flex flex-col items-center justify-center px-6 overflow-hidden" style={{ backgroundImage: "url('/front.jpg')" }}>
-      <div className="absolute inset-0 bg-gradient-to-t from-[#173D32]/90 via-[#173D32]/40 to-black/20"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-[#173D32]/95 via-[#173D32]/70 to-black/40"></div>
 
       <style>{`
         @keyframes float {
@@ -40,9 +40,9 @@ export default function Welcome() {
       <div className="relative z-10 max-w-md w-full text-center">
         <div className="mb-8">
           <img
-            src="/logo.png"
+            src="/logo_new.png"
             alt="University of Lahore"
-            className="w-24 h-24 object-contain mx-auto mb-5"
+            className="w-32 h-32 object-contain mx-auto mb-5"
             onError={(e) => {
               const fallback = document.createElement('div')
               fallback.className = 'w-20 h-20 rounded-2xl bg-gold flex items-center justify-center mx-auto mb-5'

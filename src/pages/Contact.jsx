@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
+import emailjs from '@emailjs/browser'
 
 const faqs = [
   { q: 'How accurate is the Room Finder?', a: 'Our Room Finder is updated every semester based on the official UOL registrar\'s database, ensuring over 98% accuracy for all academic blocks and specialized labs.' },
@@ -31,22 +32,52 @@ function Accordion({ q, a }) {
 }
 
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', department: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.name || !form.email || !form.message) return
+    
+    setSubmitting(true)
     try {
+      // Save to Supabase (optional, for record keeping)
       await supabase.from('contact_messages').insert({
         name: form.name.trim(),
         email: form.email.trim(),
-        department: form.department || null,
         message: form.message.trim(),
       })
-    } catch {}
+
+      // Send email via EmailJS
+      console.log('Sending email with:', {
+        serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+        params: { from_name: form.name, from_email: form.email, message: form.message, to_email: 'infouolnexus@gmail.com' }
+      })
+      const result = await emailjs.send(
+        import.meta.env.VITE_EMAILJS_SERVICE_ID,
+        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+        {
+          from_name: form.name,
+          from_email: form.email,
+          message: form.message,
+          to_email: 'infouolnexus@gmail.com',
+        },
+        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      )
+      console.log('EmailJS result:', result)
+    } catch (err) {
+      console.error('Email send error:', err)
+      alert(`Failed to send: ${err?.text || err?.message || 'Unknown error'}`)
+      setSubmitting(false)
+      return
+    }
+    
     setSent(true)
-    setForm({ name: '', email: '', department: '', message: '' })
+    setForm({ name: '', email: '', message: '' })
+    setSubmitting(false)
     setTimeout(() => setSent(false), 4000)
   }
 
@@ -72,80 +103,48 @@ export default function Contact() {
         </div>
       </section>
       <div className="max-w-7xl mx-auto px-6 py-10">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        <div className="lg:col-span-2">
-          <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-sm font-medium text-navy mb-1.5">Full Name</label>
-                <input
-                  type="text"
-                  placeholder="Your name"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-navy mb-1.5">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="you@uol.edu.pk"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition-all"
-                />
-              </div>
-            </div>
+      <div className="max-w-2xl mx-auto">
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-medium text-navy mb-1.5">Department</label>
-              <select
-                value={form.department}
-                onChange={(e) => setForm({ ...form, department: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold bg-white"
-              >
-                <option value="">Select a department</option>
-                <option value="computer-science">Computer Science</option>
-                <option value="business">Business Administration</option>
-                <option value="pharmacy">Pharmacy</option>
-                <option value="engineering">Engineering</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-navy mb-1.5">Message</label>
-              <textarea
-                rows={5}
-                placeholder="Write your message here..."
-                value={form.message}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition-all resize-none"
+              <label className="block text-sm font-medium text-navy mb-1.5">Full Name</label>
+              <input
+                type="text"
+                placeholder="Your name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition-all"
               />
             </div>
-            <button
-              type="submit"
-              className="px-6 py-2.5 bg-navy text-white font-semibold rounded-xl hover:bg-navy-light transition-colors"
-            >
-              {sent ? 'Message Sent!' : 'Send Message'}
-            </button>
-          </form>
-        </div>
-        <div className="space-y-4">
-          {[
-            { icon: 'location_on', label: 'Address', value: '1-KM Defence Road, Lahore, Punjab' },
-            { icon: 'mail', label: 'Email', value: 'info@uol.edu.pk' },
-          ].map((item) => (
-            <div key={item.label} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-navy/5 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-navy">{item.icon}</span>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-0.5">{item.label}</p>
-                <p className="text-sm font-medium text-navy">{item.value}</p>
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-navy mb-1.5">Email Address</label>
+              <input
+                type="email"
+                placeholder="you@uol.edu.pk"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition-all"
+              />
             </div>
-          ))}
-        </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-navy mb-1.5">Message</label>
+            <textarea
+              rows={5}
+              placeholder="Write your message here..."
+              value={form.message}
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition-all resize-none"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full px-6 py-2.5 bg-navy text-white font-semibold rounded-xl hover:bg-navy-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting ? 'Sending...' : sent ? 'Message Sent!' : 'Send Message'}
+          </button>
+        </form>
       </div>
 
       <div className="max-w-3xl mx-auto mt-14">

@@ -98,7 +98,7 @@ export default function MemoryWall() {
         center={[31.390722, 74.2410]}
         zoom={16}
         minZoom={15}
-        maxZoom={20}
+        maxZoom={22}
         maxBounds={[[31.3875, 74.2385], [31.3945, 74.2455]]}
         maxBoundsViscosity={1}
         className="h-full w-full z-0"

@@ -1,32 +1,19 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { supabase } from '../lib/supabase'
 
 const gate2Pos = [31.389868442049437, 74.24039647420663]
 
-const campusSpine = [
-  [31.38987, 74.24040],
-  [31.39015, 74.24050],
-  [31.39040, 74.24063],
-  [31.39065, 74.24078],
-  [31.39088, 74.24093],
-  [31.39110, 74.24112],
-  [31.39132, 74.24132],
-  [31.39155, 74.24153],
-  [31.39178, 74.24175],
-  [31.39200, 74.24195],
-  [31.39215, 74.24208],
-]
-
-function getInternalRoute(bLat, bLng) {
-  let bestIdx = 0, bestDist = Infinity
-  for (let i = 0; i < campusSpine.length; i++) {
-    const d = Math.hypot(campusSpine[i][0] - bLat, campusSpine[i][1] - bLng)
-    if (d < bestDist) { bestDist = d; bestIdx = i }
-  }
-  return [...campusSpine.slice(0, bestIdx + 1), [bLat, bLng]]
+// Buildings that have departments in Excel files (building_id -> true)
+const BUILDINGS_WITH_DEPTS = {
+  '10000000-0000-0000-0000-000000000001': true, // CS&IT
+  '10000000-0000-0000-0000-000000000005': true, // AHS Building
+  '10000000-0000-0000-0000-000000000007': true, // EE-1
+  '10000000-0000-0000-0000-000000000008': true, // EE-2
+  '10000000-0000-0000-0000-000000000012': true, // ITC
+  '10000000-0000-0000-0000-000000000003': true, // SE/Software Engineering
 }
 
 function createNavyIcon() {
@@ -67,8 +54,6 @@ export default function RoomFinder() {
   const [departments, setDepartments] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [routeCoords, setRouteCoords] = useState(null)
-  const [routeDistance, setRouteDistance] = useState(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -92,17 +77,6 @@ export default function RoomFinder() {
     }
     fetchData()
   }, [])
-
-  useEffect(() => {
-    if (!selected) { setRouteCoords(null); setRouteDistance(null); return }
-    const coords = getInternalRoute(selected.latitude, selected.longitude)
-    setRouteCoords(coords)
-    let dist = 0
-    for (let i = 1; i < coords.length; i++) {
-      dist += Number(haversineKm(coords[i-1][0], coords[i-1][1], coords[i][0], coords[i][1]))
-    }
-    setRouteDistance(dist.toFixed(3))
-  }, [selected])
 
   const filtered = useMemo(() => {
     if (!search.trim()) return buildings
@@ -129,11 +103,12 @@ export default function RoomFinder() {
     setSearch('')
   }, [])
 
-  const distance = routeDistance || (selected ? haversineKm(gate2Pos[0], gate2Pos[1], selected.latitude, selected.longitude) : '0')
   const buildingRooms = selected ? rooms.filter((r) => r.building_id === selected.id) : []
   const buildingDepts = selected ? departments.filter((d) => d.building_id === selected.id) : []
   const roomBuilding = selectedRoom ? buildings.find((b) => b.id === selectedRoom.building_id) : null
   const roomDept = selectedRoom && selectedRoom.department_id ? departments.find((d) => d.id === selectedRoom.department_id) : null
+
+  const distance = selected ? haversineKm(gate2Pos[0], gate2Pos[1], selected.latitude, selected.longitude) : '0'
 
   if (loading) {
     return (
@@ -159,13 +134,13 @@ export default function RoomFinder() {
 
   return (
     <div className="relative h-full">
-      <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex items-center justify-center">
+      {/* <div className="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex items-center justify-center">
         <div className="text-center px-6">
           <span className="material-symbols-outlined text-5xl text-navy mb-3 block">construction</span>
           <h2 className="text-2xl font-bold text-navy mb-1">Coming Soon</h2>
           <p className="text-sm text-gray-500">This feature will be available soon.</p>
         </div>
-      </div>
+      </div> */}
       <div className="h-full min-h-0 flex flex-col lg:flex-row">
       <div className="w-full lg:w-80 xl:w-96 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col shrink-0 lg:max-h-none max-h-[40vh] min-h-0">
         <div className="p-4 border-b border-gray-100">
@@ -241,7 +216,7 @@ export default function RoomFinder() {
             center={[31.3902, 74.2410]}
             zoom={17}
             minZoom={15}
-            maxZoom={20}
+            maxZoom={22}
             maxBounds={[[31.3875, 74.2385], [31.3945, 74.2455]]}
             maxBoundsViscosity={1}
             className="h-full w-full z-0"
@@ -254,46 +229,34 @@ export default function RoomFinder() {
               attribution='&copy; <a href="https://www.esri.com/">Esri</a>'
               url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
             />
-            {selected && routeCoords && (
-              <Polyline
-                positions={routeCoords}
-                pathOptions={{ color: '#F4A93F', weight: 4, opacity: 0.8 }}
-              />
-            )}
-            {selected && !routeCoords && (
-              <Polyline
-                positions={[gate2Pos, [selected.latitude, selected.longitude]]}
-                pathOptions={{ color: '#F4A93F', weight: 3, dashArray: '10, 8', opacity: 0.8 }}
-              />
-            )}
-            {buildings.map((b) => (
-              <Marker
-                key={b.id}
-                position={[b.latitude, b.longitude]}
-                icon={selected?.id === b.id ? createGoldIcon() : createNavyIcon()}
-              >
-                <Popup>
-                  <div className="text-center">
-                    <p className="font-bold text-navy text-sm">{b.name}</p>
-                    <p className="text-xs text-gray-500">{b.department_category}</p>
-                    <p className="text-xs text-gray-400 mt-1">Code: {b.code}</p>
-                  </div>
-                </Popup>
+{buildings.map((b) => (
+                <Marker
+                  key={b.id}
+                  position={[b.latitude, b.longitude]}
+                  icon={selected?.id === b.id ? createGoldIcon() : createNavyIcon()}
+                >
+                  <Popup>
+                    <div className="text-center">
+                      <p className="font-bold text-navy text-sm">{b.name}</p>
+                      <p className="text-xs text-gray-500">{b.department_category}</p>
+                      <p className="text-xs text-gray-400 mt-1">Code: {b.code}</p>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+              <Marker position={gate2Pos} icon={L.divIcon({
+                className: '',
+                html: `<div style="background:#EF4444;color:white;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.3);">GATE 2</div>`,
+                iconSize: [0, 0],
+                iconAnchor: [0, 0],
+              })}>
+                <Popup>Gate 2 — Main Entrance</Popup>
               </Marker>
-            ))}
-            <Marker position={gate2Pos} icon={L.divIcon({
-              className: '',
-              html: `<div style="background:#EF4444;color:white;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.3);">GATE 2</div>`,
-              iconSize: [0, 0],
-              iconAnchor: [0, 0],
-            })}>
-              <Popup>Gate 2 — Main Entrance</Popup>
-            </Marker>
           </MapContainer>
         )}
 
         {selected && showDetail && (
-          <div className="absolute bottom-4 left-4 right-4 lg:left-auto lg:right-4 lg:w-96 z-10">
+          <div className="absolute top-4 left-4 right-4 lg:left-auto lg:right-4 lg:w-96 z-10">
             <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
               <div className="relative">
                 {selected.photo_url ? (
@@ -344,7 +307,7 @@ export default function RoomFinder() {
                     <span className="text-sm text-gray-600">{selected.code}</span>
                   </div>
                 </div>
-                {buildingDepts.length > 0 && (
+                {buildingDepts.length > 0 && BUILDINGS_WITH_DEPTS[selected.id] && (
                   <div className="mb-4">
                     <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Departments</p>
                     <div className="flex flex-wrap gap-1.5">
